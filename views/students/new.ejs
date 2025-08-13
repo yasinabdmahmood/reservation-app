@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Create Student & Check Reservation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Bootstrap CSS (via CDN or local) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Reservation App</a>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="card shadow-sm">
+                    <div class="card-header fw-bold">New Student</div>
+                    <div class="card-body">
+                        <% if (flash) { %>
+                            <div class="alert alert-<%= flash.type %>">
+                                <%= flash.msg %>
+                            </div>
+                            <% } %>
+
+                                <form action="/students" method="POST" class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Name</label>
+                                        <input required name="name" type="text" class="form-control"
+                                            placeholder="Full name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Phone Number</label>
+                                        <input required name="phone_number" type="text" class="form-control"
+                                            placeholder="e.g., 07xxxxxxxx">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">ID Number</label>
+                                        <input required name="id_number" type="text" class="form-control"
+                                            placeholder="National ID">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Date</label>
+                                        <input id="date" name="date" type="date" class="form-control" required>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">College</label>
+                                        <select id="college" name="college_id" class="form-select" required>
+                                            <option value="">-- Select College --</option>
+                                            <% colleges.forEach(c=> { %>
+                                                <option value="<%= c.id %>">
+                                                    <%= c.name %>
+                                                </option>
+                                                <% }); %>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Center</label>
+                                        <select id="center" name="center_id" class="form-select" required>
+                                            <option value="">-- Select Center --</option>
+                                            <% centers.forEach(c=> { %>
+                                                <option value="<%= c.id %>">
+                                                    <%= c.name %>
+                                                </option>
+                                                <% }); %>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">Create Reservation</button>
+                                    </div>
+                                </form>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reservation status panel -->
+            <div class="card-body">
+                <!-- Spinner (hidden by default) -->
+                <div id="resvSpinner" class="d-none text-center my-3">
+                    <div class="spinner-border" role="status" aria-hidden="true"></div>
+                    <div class="small text-muted mt-2">Loading reservation…</div>
+                </div>
+
+                <div id="resvInfo" class="d-none">
+                    <div id="resvAlert" class="alert" role="alert"></div>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Date</span> <strong id="resvDate">—</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>College</span> <strong id="resvCollege">—</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Center</span> <strong id="resvCenter">—</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Capacity</span> <strong id="resvCapacity">—</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Reserved</span> <strong id="resvReserved">—</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Available</span> <strong id="resvAvailable">—</strong>
+                        </li>
+                    </ul>
+                </div>
+
+                <div id="resvPlaceholder" class="text-muted">
+                    Select a <em>Date</em>, <em>College</em>, and <em>Center</em> to check or create a reservation.
+                </div>
+            </div>
+
+
+
+
+            <!-- Bootstrap JS (optional) -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+            <!-- Inline script to auto-check/create reservation -->
+            <script>
+                const dateEl = document.getElementById('date');
+                const collegeEl = document.getElementById('college');
+                const centerEl = document.getElementById('center');
+
+                const infoBox = document.getElementById('resvInfo');
+                const placeholder = document.getElementById('resvPlaceholder');
+                const spinner = document.getElementById('resvSpinner');
+                const alertBox = document.getElementById('resvAlert');
+
+                const resvDate = document.getElementById('resvDate');
+                const resvCollege = document.getElementById('resvCollege');
+                const resvCenter = document.getElementById('resvCenter');
+                const resvCapacity = document.getElementById('resvCapacity');
+                const resvReserved = document.getElementById('resvReserved');
+                const resvAvailable = document.getElementById('resvAvailable');
+
+                let debounceTimer;
+
+                function setLoading(isLoading) {
+                    if (isLoading) {
+                        spinner.classList.remove('d-none');
+                        infoBox.classList.add('d-none');
+                        // keep placeholder state as-is; we’ll hide it after success
+                    } else {
+                        spinner.classList.add('d-none');
+                    }
+                }
+
+                [dateEl, collegeEl, centerEl].forEach(el => {
+                    el.addEventListener('change', () => {
+                        clearTimeout(debounceTimer);
+                        debounceTimer = setTimeout(checkReservation, 200);
+                    });
+                });
+
+                async function checkReservation() {
+                    const date = dateEl.value;
+                    const college_id = collegeEl.value;
+                    const center_id = centerEl.value;
+
+                    if (!date || !college_id || !center_id) {
+                        infoBox.classList.add('d-none');
+                        spinner.classList.add('d-none');
+                        placeholder.classList.remove('d-none');
+                        return;
+                    }
+
+                    setLoading(true);
+
+                    try {
+                        const params = new URLSearchParams({ date, college_id, center_id });
+                        const resp = await fetch(`/students/api/reservations/check?${params.toString()}`);
+                        const data = await resp.json();
+
+                        setLoading(false);
+
+                        if (!data.ok) {
+                            alertBox.className = 'alert alert-danger';
+                            alertBox.textContent = data.error || 'Failed to check reservation.';
+                            infoBox.classList.remove('d-none');
+                            placeholder.classList.add('d-none');
+                            resvDate.textContent = '—';
+                            resvCollege.textContent = '—';
+                            resvCenter.textContent = '—';
+                            resvCapacity.textContent = '—';
+                            resvReserved.textContent = '—';
+                            resvAvailable.textContent = '—';
+                            return;
+                        }
+
+                        // Success: show stats with names
+                        alertBox.className = 'alert alert-info';
+                        alertBox.textContent = 'Reservation found (or created) for the selected date/center/college.';
+                        resvDate.textContent = data.reservation.date;
+                        resvCollege.textContent = data.reservation.college_name || `#${data.reservation.college_id}`;
+                        resvCenter.textContent = data.reservation.center_name || `#${data.reservation.center_id}`;
+                        resvCapacity.textContent = data.reservation.capacity;
+                        resvReserved.textContent = data.reservation.reserved;
+                        resvAvailable.textContent = data.reservation.available;
+
+                        infoBox.classList.remove('d-none');
+                        placeholder.classList.add('d-none');
+                    } catch (e) {
+                        setLoading(false);
+                        alertBox.className = 'alert alert-danger';
+                        alertBox.textContent = e.message || 'Network error checking reservation.';
+                        infoBox.classList.remove('d-none');
+                        placeholder.classList.add('d-none');
+                    }
+                }
+            </script>
+
+</body>
+
+</html>
