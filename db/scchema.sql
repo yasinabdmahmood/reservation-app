@@ -8,7 +8,7 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE student (
   id           INTEGER PRIMARY KEY,
   name         TEXT    NOT NULL,
-  phone_number TEXT    NOT NULL UNIQUE, -- store as TEXT to preserve leading zeros/formatting
+  phone_number TEXT    NOT NULL, -- store as TEXT to preserve leading zeros/formatting
   id_number    TEXT    NOT NULL UNIQUE  -- national ID safer as TEXT
 );
 
@@ -18,22 +18,21 @@ CREATE TABLE center (
   -- , UNIQUE(name)            -- uncomment if center names must be distinct
 );
 
-CREATE TABLE college (
-  id   INTEGER PRIMARY KEY,
-  name TEXT NOT NULL
-  -- , UNIQUE(name)            -- uncomment if college names must be distinct
-);
+-- CREATE TABLE college (
+--   id   INTEGER PRIMARY KEY,
+--   name TEXT NOT NULL
+--   -- , UNIQUE(name)            -- uncomment if college names must be distinct
+-- );
 
 CREATE TABLE reservation (
   id         INTEGER PRIMARY KEY,
   center_id  INTEGER NOT NULL REFERENCES center(id)  ON UPDATE CASCADE ON DELETE RESTRICT,
-  college_id INTEGER NOT NULL REFERENCES college(id) ON UPDATE CASCADE ON DELETE RESTRICT,
   date       TEXT    NOT NULL,       -- YYYY-MM-DD (date only)
   capacity   INTEGER NOT NULL,
   reserved   INTEGER NOT NULL,
 
   -- Uniqueness: exactly one session per (center, college, date)
-  UNIQUE(center_id, college_id, date),
+  UNIQUE(center_id, date),
 
   -- Validations
   CHECK (capacity >= 0),
@@ -54,7 +53,7 @@ CREATE TABLE student_reservation (
 -- ======================
 
 -- Already enforced by UNIQUE constraint above, but explicit index name can help clarity:
--- CREATE UNIQUE INDEX reservation_unique_trio ON reservation(center_id, college_id, date);
+-- CREATE UNIQUE INDEX reservation_unique_trio ON reservation(center_id, date);
 
 CREATE INDEX idx_student_reservation_student     ON student_reservation(student_id);
 CREATE INDEX idx_student_reservation_reservation ON student_reservation(reservation_id);

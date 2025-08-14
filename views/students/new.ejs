@@ -51,18 +51,6 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label class="form-label">College</label>
-                                        <select id="college" name="college_id" class="form-select" required>
-                                            <option value="">-- Select College --</option>
-                                            <% colleges.forEach(c=> { %>
-                                                <option value="<%= c.id %>">
-                                                    <%= c.name %>
-                                                </option>
-                                                <% }); %>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-6">
                                         <label class="form-label">Center</label>
                                         <select id="center" name="center_id" class="form-select" required>
                                             <option value="">-- Select Center --</option>
@@ -97,9 +85,9 @@
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Date</span> <strong id="resvDate">—</strong>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between">
+                        <!-- <li class="list-group-item d-flex justify-content-between">
                             <span>College</span> <strong id="resvCollege">—</strong>
-                        </li>
+                        </li> -->
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Center</span> <strong id="resvCenter">—</strong>
                         </li>
@@ -116,7 +104,7 @@
                 </div>
 
                 <div id="resvPlaceholder" class="text-muted">
-                    Select a <em>Date</em>, <em>College</em>, and <em>Center</em> to check or create a reservation.
+                    Select a <em>Date</em>, and <em>Center</em> to check or create a reservation.
                 </div>
             </div>
 
@@ -129,7 +117,7 @@
             <!-- Inline script to auto-check/create reservation -->
             <script>
                 const dateEl = document.getElementById('date');
-                const collegeEl = document.getElementById('college');
+        
                 const centerEl = document.getElementById('center');
 
                 const infoBox = document.getElementById('resvInfo');
@@ -156,7 +144,7 @@
                     }
                 }
 
-                [dateEl, collegeEl, centerEl].forEach(el => {
+                [dateEl, centerEl].forEach(el => {
                     el.addEventListener('change', () => {
                         clearTimeout(debounceTimer);
                         debounceTimer = setTimeout(checkReservation, 200);
@@ -165,10 +153,9 @@
 
                 async function checkReservation() {
                     const date = dateEl.value;
-                    const college_id = collegeEl.value;
                     const center_id = centerEl.value;
 
-                    if (!date || !college_id || !center_id) {
+                    if (!date || !center_id) {
                         infoBox.classList.add('d-none');
                         spinner.classList.add('d-none');
                         placeholder.classList.remove('d-none');
@@ -178,9 +165,10 @@
                     setLoading(true);
 
                     try {
-                        const params = new URLSearchParams({ date, college_id, center_id });
+                        const params = new URLSearchParams({ date, center_id });
                         const resp = await fetch(`/students/api/reservations/check?${params.toString()}`);
                         const data = await resp.json();
+                        console.log(data)
 
                         setLoading(false);
 
@@ -190,7 +178,6 @@
                             infoBox.classList.remove('d-none');
                             placeholder.classList.add('d-none');
                             resvDate.textContent = '—';
-                            resvCollege.textContent = '—';
                             resvCenter.textContent = '—';
                             resvCapacity.textContent = '—';
                             resvReserved.textContent = '—';
@@ -202,7 +189,6 @@
                         alertBox.className = 'alert alert-info';
                         alertBox.textContent = 'Reservation found (or created) for the selected date/center/college.';
                         resvDate.textContent = data.reservation.date;
-                        resvCollege.textContent = data.reservation.college_name || `#${data.reservation.college_id}`;
                         resvCenter.textContent = data.reservation.center_name || `#${data.reservation.center_id}`;
                         resvCapacity.textContent = data.reservation.capacity;
                         resvReserved.textContent = data.reservation.reserved;

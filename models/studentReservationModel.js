@@ -23,3 +23,15 @@ exports.create = ({ student_id, reservation_id }) => {
     });
   });
 };
+
+exports.listStudentsByReservation = (reservation_id) => new Promise((resolve, reject) => {
+  db.all(
+    `SELECT s.id, s.name, s.phone_number, s.id_number
+     FROM student s
+     JOIN student_reservation sr ON sr.student_id = s.id
+     WHERE sr.reservation_id = ?
+     ORDER BY s.name ASC`,
+    [reservation_id],
+    (err, rows) => err ? reject(err) : resolve(rows || [])
+  );
+});

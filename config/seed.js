@@ -9,31 +9,31 @@ const db = new sqlite3.Database(dbPath);
 db.serialize(() => {
   console.log('🌱 Seeding database with sample data...');
 
-  // Insert fake colleges
-  const colleges = [
-    'College of Engineering',
-    'College of Science',
-    'College of Arts',
-    'College of Business',
-    'College of Medicine'
-  ];
-  colleges.forEach(name => {
-    db.run('INSERT INTO college (name) VALUES (?)', [name], function (err) {
-      if (err) {
-        console.error('❌ Error inserting college:', err.message);
-      } else {
-        console.log(`✅ College added: ${name}`);
-      }
-    });
-  });
+//   // Insert fake colleges
+//   const colleges = [
+//     'College of Engineering',
+//     'College of Science',
+//     'College of Arts',
+//     'College of Business',
+//     'College of Medicine'
+//   ];
+//   colleges.forEach(name => {
+//     db.run('INSERT INTO college (name) VALUES (?)', [name], function (err) {
+//       if (err) {
+//         console.error('❌ Error inserting college:', err.message);
+//       } else {
+//         console.log(`✅ College added: ${name}`);
+//       }
+//     });
+//   });
 
   // Insert fake centers
   const centers = [
-    'Downtown Exam Center',
-    'North Campus Center',
-    'South Campus Center',
-    'East Learning Hub',
-    'West Training Center'
+    'كلية الهندسة',
+    'كلية التمريض',
+    'كلية التربية للعلوم الصرفة',
+    'كلية الادارة والاقتصاد',
+    'كلية التربية للبنات'
   ];
   centers.forEach(name => {
     db.run('INSERT INTO center (name) VALUES (?)', [name], function (err) {
