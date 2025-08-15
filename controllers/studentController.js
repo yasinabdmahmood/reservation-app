@@ -49,6 +49,18 @@ exports.createStudent = async (req, res) => {
             center_id: Number(center_id)
         });
 
+        // check if reservation is at capacity
+        if (reservation.reserved >= reservation.capacity) {
+            return renderResult(
+                'danger',
+                 'لا يوجد حجز متبقي لهذا اليوم',
+                student,
+                reservation,
+                center,
+            );
+
+        }
+
         // Find or create student
         let student = await studentModel.findByIdNumber(id_number);
         if (!student) {
