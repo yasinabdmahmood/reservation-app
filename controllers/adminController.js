@@ -11,7 +11,7 @@ exports.renderReservationAdmin = async (req, res) => {
     return res.render('admin/reservations', { centers });
   } catch (err) {
     console.error(err);
-    return res.status(500).send('Failed to load admin reservation view.');
+    return res.status(500).send('فشل في تحميل عرض حجوزات المدير.');
   }
 };
 
@@ -21,7 +21,7 @@ exports.apiFindReservation = async (req, res) => {
   try {
     const { center_id, date } = req.query;
     if (!center_id || !date) {
-      return res.status(400).json({ ok: false, error: 'Missing center_id or date.' });
+      return res.status(400).json({ ok: false, error: 'معرف المركز أو التاريخ مفقود.' });
     }
 
     const reservation = await reservationModel.findByUnique({
@@ -30,7 +30,7 @@ exports.apiFindReservation = async (req, res) => {
     });
 
     if (!reservation) {
-      return res.json({ ok: false, error: 'No reservation found for this date and center.' });
+      return res.json({ ok: false, error: 'لم يتم العثور على حجز لهذا التاريخ والمركز.' });
     }
 
     const center = await centerModel.getById(reservation.center_id);
@@ -50,7 +50,7 @@ exports.apiFindReservation = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ ok: false, error: err.message || 'Failed to fetch reservation.' });
+    return res.status(500).json({ ok: false, error: err.message || 'فشل في جلب الحجز.' });
   }
 };
 
@@ -59,7 +59,7 @@ exports.apiFindReservation = async (req, res) => {
 exports.downloadStudentsXlsx = async (req, res) => {
   try {
     const reservationId = Number(req.params.reservationId);
-    if (!reservationId) return res.status(400).send('Invalid reservation id.');
+    if (!reservationId) return res.status(400).send('معرف الحجز غير صالح.');
 
     const reservation = await new Promise((resolve, reject) => {
       const db = require('../config/db');
@@ -70,7 +70,7 @@ exports.downloadStudentsXlsx = async (req, res) => {
     });
 
     if (!reservation) {
-      return res.status(404).send('Reservation not found.');
+      return res.status(404).send('لم يتم العثور على الحجز.');
     }
 
     const center = await centerModel.getById(reservation.center_id);
@@ -113,7 +113,7 @@ exports.downloadStudentsXlsx = async (req, res) => {
     res.end();
   } catch (err) {
     console.error(err);
-    res.status(500).send('Failed to generate Excel.');
+    res.status(500).send('فشل في إنشاء ملف Excel.');
   }
 };
 
