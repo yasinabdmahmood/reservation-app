@@ -11,21 +11,12 @@
 </head>
 
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark flex-column align-items-start py-2">
-        <div class="container flex-column">
-            <!-- University / Party info -->
-            <span class="text-white-50 small mb-1 d-block text-center w-100" style="font-size: 2rem;">
-                رئاسة جامعة كركوك - مركز الحاسبة
-            </span>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container d-flex flex-row justify-content-around">
+            <a class="navbar-brand" href="/">تطبيق الحجز</a>
+            <span class="navbar-text ms-auto">رئاسة جامعة كركوك - مركز الحاسبة</span>
         </div>
     </nav>
-
-    <div class="navbar-brand fw-bold text-center w-100">
-        <!-- App name -->
-        <span class="fw-bold text-center" style="font-size: 1.5rem;" >
-            تطبيق الحجز
-        </span>
-    </div>
 
 
     <div class="container py-4">
@@ -52,7 +43,7 @@
                                             placeholder="مثال: 07xxxxxxxx">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">رقم الهوية</label>
+                                        <label class="form-label"> رقم الهويةاو بطاقة الموحدة</label>
                                         <input required name="id_number" type="text" class="form-control"
                                             placeholder="الهوية الوطنية">
                                     </div>
@@ -137,7 +128,7 @@
                             return (date.getDay() === 5 || date.getDay() === 6);
                         }
                     ],
-                    defaultDate: "2025-8-17", // pre-select today
+                    defaultDate: "today", // pre-select today
                 });
             </script>
 
