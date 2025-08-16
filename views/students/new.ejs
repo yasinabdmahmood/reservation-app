@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 
 <head>
     <meta charset="UTF-8" />
@@ -11,12 +11,20 @@
 </head>
 
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container d-flex flex-row justify-content-around">
-            <a class="navbar-brand" href="/">تطبيق الحجز</a>
-            <span class="navbar-text ms-auto">رئاسة جامعة كركوك - مركز الحاسبة</span>
+    <nav class="navbar navbar-dark bg-dark py-2" dir="rtl">
+        <div class="container d-flex flex-column flex-lg-row align-items-center justify-content-between">
+            <!-- Right on large screens, top on mobile -->
+            <span class="navbar-text fs-5 fw-bold">
+                رئاسة جامعة كركوك - مركز الحاسبة
+            </span>
+
+            <!-- Left on large screens, bottom on mobile -->
+            <a class="navbar-brand fw-bold fs-4" href="/">
+                تطبيق الحجز
+            </a>
         </div>
     </nav>
+
 
 
     <div class="container py-4">
