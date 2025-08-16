@@ -8,6 +8,28 @@
     <!-- Bootstrap CSS (via CDN or local) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* Outline today */
+        .flatpickr-day.today {
+            border: 2px solid #198754;
+            /* Bootstrap success */
+            border-radius: 50%;
+        }
+
+        /* If today is selected, fill it */
+        .flatpickr-day.today.selected {
+            background: #198754;
+            color: #fff;
+        }
+
+        /* Optional: if today is disabled (e.g., today is Fri/Sat), show it in red */
+        .flatpickr-day.today.disabled {
+            border-color: #dc3545;
+            /* Bootstrap danger */
+            color: #dc3545;
+        }
+    </style>
+
 </head>
 
 <body class="bg-light">
@@ -51,13 +73,13 @@
                                             placeholder="مثال: 07xxxxxxxx">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label"> رقم الهويةاو بطاقة الموحدة</label>
+                                        <label class="form-label"> رقم الهوية او البطاقة الموحدة</label>
                                         <input required name="id_number" type="text" class="form-control"
                                             placeholder="الهوية الوطنية">
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label class="form-label">التاريخ</label>
+                                        <label class="form-label">تاريخ المراجعة</label>
                                         <!-- <input id="date" name="date" type="date" class="form-control" required> -->
                                         <input id="date" name="date" type="text" class="form-control" required>
                                     </div>
@@ -130,13 +152,14 @@
             <script>
                 flatpickr("#date", {
                     dateFormat: "Y-m-d",
+                    minDate: "today",
+                    defaultDate: "today",
                     disable: [
                         function (date) {
                             // Disable Fridays (5) and Saturdays (6)
                             return (date.getDay() === 5 || date.getDay() === 6);
                         }
                     ],
-                    defaultDate: "today", // pre-select today
                 });
             </script>
 
